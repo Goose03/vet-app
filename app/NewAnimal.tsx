@@ -1,21 +1,10 @@
 import React from 'react';
 import { Text, View, ImageBackground, TextInput, TouchableOpacity, Alert } from "react-native";
 import Ganso from "../assets/images/ganso.jpg"; 
-import firestore from '@react-native-firebase/firestore';
-import{ initializeApp } from "firebase/app";
+import { app } from '../firebase'; 
 import{ getFirestore, collection, doc, addDoc } from "firebase/firestore";
 
 export default function NewAnimal() {
-  const firebaseConfig ={
-    apiKey: process.env.EXPO_PUBLIC_API_KEY,
-    authDomain: process.env.EXPO_PUBLIC_AUTH_DOMAIN,
-    projectId: process.env.EXPO_PUBLIC_PROJECT_ID,
-    storageBucket: process.env.EXPO_PUBLIC_STORAGE_BUCKET,
-    messagingSenderId: process.env.EXPO_PUBLIC_MESSAGING_SENDER_ID,
-    appId: process.env.EXPO_PUBLIC_APP_ID,
-  };
-  
-  const app = initializeApp(firebaseConfig);
   const db= getFirestore(app);
 
   const [name, onChangeName] = React.useState('');
