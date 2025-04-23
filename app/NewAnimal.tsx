@@ -1,9 +1,9 @@
 import React from 'react';
 import { Text, View, ImageBackground, TextInput, TouchableOpacity, Alert } from "react-native";
-import Ganso from "../assets/images/ganso.jpg"; // your background image
+import Ganso from "../assets/images/ganso.jpg"; 
 import firestore from '@react-native-firebase/firestore';
 import{ initializeApp } from "firebase/app";
-import{getFirestore,doc,setDoc} from "firebase/firestore";
+import{ getFirestore, collection, doc, addDoc } from "firebase/firestore";
 
 export default function NewAnimal() {
   const firebaseConfig ={
@@ -18,16 +18,41 @@ export default function NewAnimal() {
   const app = initializeApp(firebaseConfig);
   const db= getFirestore(app);
 
-  const [nombre, onChangeNombre] = React.useState('');
-  const [edad, onChangeEdad] = React.useState('');
-  const [img, onChangeImg] = React.useState('');
+  const [name, onChangeName] = React.useState('');
+  const [age, onChangeAge] = React.useState('');
+  const [species, onChangeSpecies] = React.useState('');
+  const [image, onChangeImage] = React.useState('');
+  const [disabled, setDisabled] = React.useState(false);
 
-  const handlePress = () => {
-    if(nombre != '' && edad != '' && img != ''){
-      Alert.alert(`Nombre: ${nombre} Edad: ${edad} Imagen URL: ${img}`);
+  const handlePress = async() => {
+    if(name != '' && age != '' && image != ''){
+      //Alert.alert(`Name: ${name} Age: ${age} Species: ${species} Imagen URL: ${image}`);
+      setDisabled(true);
+      try {
+        var animalesCollection = collection(db, "Animales");
+            const newDoc = await addDoc(
+              animalesCollection, {
+                name : name,
+                age : age,
+                species : species,
+                image : image,
+              }
+            );
+      }
+      catch (error) { 
+        console.error(error);
+      }
+      finally {
+        Alert.alert('Animal agregado correctamente');
+        onChangeName('');
+        onChangeAge('');
+        onChangeSpecies('');
+        onChangeImage('');
+      }
     }
     else{
-      Alert.alert('Los datos no son validos')
+      Alert.alert('Los datos no son validos');
+      setDisabled(false);
     }
   };
 
@@ -39,17 +64,17 @@ export default function NewAnimal() {
       className="flex-1 w-full items-center justify-center opacity-60"
       >
       
-      <View className="bg-bggrey p-10 rounded-3xl w-2/3 h-3/5">
+      <View className="bg-bggrey p-10 rounded-3xl w-2/3 h-4/5">
         <Text className="text-white text-xl font-bold mb-5">Add New Animal</Text>
         
         <View className='flex-1 justify-between'>
           
           <View>
-            <Text className='text-white text-xl font-bold m-5'>Nombre</Text>
+            <Text className='text-white text-xl font-bold m-5'>Name</Text>
             <TextInput
               className='text-xl pl-5 font-bold bg-white rounded-2xl'
-              onChangeText={onChangeNombre}
-              value={nombre}
+              onChangeText={onChangeName}
+              value={name}
               multiline={false}
               numberOfLines={1}
             />
@@ -57,11 +82,11 @@ export default function NewAnimal() {
 
 
           <View>
-            <Text className='text-white text-xl font-bold m-5'>Edad</Text>
+            <Text className='text-white text-xl font-bold m-5'>Age</Text>
             <TextInput
               className='text-xl pl-5 font-bold bg-white rounded-2xl'
-              onChangeText={onChangeEdad}
-              value={edad}
+              onChangeText={onChangeAge}
+              value={age}
               keyboardType="numeric"
               multiline={false}
               numberOfLines={1}
@@ -69,11 +94,23 @@ export default function NewAnimal() {
           </View>
 
           <View>
-            <Text className='text-white text-xl font-bold m-5'>URL Imagen</Text>
+            <Text className='text-white text-xl font-bold m-5'>Species</Text>
             <TextInput
               className='text-xl pl-5 font-bold bg-white rounded-2xl'
-              onChangeText={onChangeImg}
-              value={img}
+              onChangeText={onChangeSpecies}
+              value={species}
+              keyboardType="numeric"
+              multiline={false}
+              numberOfLines={1}
+            />
+          </View>
+
+          <View>
+            <Text className='text-white text-xl font-bold m-5'>URL Image</Text>
+            <TextInput
+              className='text-xl pl-5 font-bold bg-white rounded-2xl'
+              onChangeText={onChangeImage}
+              value={image}
               multiline={false}
               numberOfLines={1}
             />
@@ -83,7 +120,8 @@ export default function NewAnimal() {
 
       <TouchableOpacity 
       className='w-2/3'
-      onPress={handlePress}>
+      onPress={handlePress}
+      disabled={disabled}>
             <View className="bg-lgreen p-2 rounded-xl m-5">
               <Text className="text-white text-center text-xl">Submit</Text>
             </View>
