@@ -57,8 +57,11 @@ export default function Login(){
         setLoading(true);
         try {
             if (action === 'login') {
-                const userCredential= await signInWithEmailAndPassword(auth, email, password).then(router.push('(tabs)/MainMenu'));
-                
+                const userCredential= await signInWithEmailAndPassword(auth, email, password)//.then(router.push('(tabs)/MainMenu'));
+                //console.log(userCredential);
+                if (userCredential) {
+                    router.push('(tabs)/MainMenu');
+                }
             } else {
                const userCredential= await createUserWithEmailAndPassword(auth, email, password);
                await setDoc(doc(db, 'users', userCredential.user.uid), {
